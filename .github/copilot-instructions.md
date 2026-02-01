@@ -1,0 +1,6 @@
+- [ ] Verify project structure created
+- [ ] Install Python dependencies
+- [ ] Configure Python environment
+- [ ] Test DOCX parsing with sample files
+- [ ] Verify GUI launches correctly
+- [ ] Test complete workflow
