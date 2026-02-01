@@ -68,20 +68,42 @@ if 'exporter' not in st.session_state:
 # ============ STEP 1: UPLOAD CSV ============
 st.markdown("## Step 1: Load Your Questions")
 
-col1, col2 = st.columns([3, 1])
+# Default GitHub CSV URL
+GITHUB_CSV_URL = "https://raw.githubusercontent.com/HansDandle/roundbuilder/main/Trivia%20Collection%20(Categorized)%20-%20questions.csv"
+
+col1, col2, col3 = st.columns([2, 1, 1])
 
 with col1:
-    uploaded_file = st.file_uploader("Upload CSV file with trivia questions", type=['csv'])
+    if st.button("📥 Load Default Trivia Questions (GitHub)", use_container_width=True, type="primary"):
+        with st.spinner("Loading from GitHub..."):
+            try:
+                st.session_state.questions = st.session_state.builder.load_csv(GITHUB_CSV_URL)
+                if st.session_state.questions:
+                    st.success(f"✅ Loaded {len(st.session_state.questions)} questions from GitHub!")
+                else:
+                    st.error("Failed to load from GitHub")
+            except Exception as e:
+                st.error(f"Error loading from GitHub: {e}")
 
 with col2:
+    st.write("")  # Spacing
+
+with col3:
+    if st.button("📤 Or Upload Custom CSV", use_container_width=True):
+        st.session_state.show_upload = not st.session_state.get('show_upload', False)
+
+# Show upload option if requested
+if st.session_state.get('show_upload', False):
+    uploaded_file = st.file_uploader("Upload your own CSV file", type=['csv'])
+    
     if uploaded_file is not None:
-        # Save uploaded file to system temp directory (cross-platform)
-        temp_dir = tempfile.gettempdir()
-        temp_path = os.path.join(temp_dir, uploaded_file.name)
-        with open(temp_path, "wb") as f:
-            f.write(uploaded_file.getbuffer())
-        
-        if st.button("📥 Load CSV"):
+        if st.button("📥 Load Uploaded CSV"):
+            # Save uploaded file to system temp directory (cross-platform)
+            temp_dir = tempfile.gettempdir()
+            temp_path = os.path.join(temp_dir, uploaded_file.name)
+            with open(temp_path, "wb") as f:
+                f.write(uploaded_file.getbuffer())
+            
             with st.spinner("Loading questions..."):
                 st.session_state.questions = st.session_state.builder.load_csv(temp_path)
             
