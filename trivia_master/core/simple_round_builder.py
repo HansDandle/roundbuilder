@@ -1,6 +1,7 @@
 """Simple random round builder with filtering"""
 import logging
 import random
+import re
 from typing import List, Dict, Any
 import pandas as pd
 
@@ -77,10 +78,23 @@ class SimpleRoundBuilder:
         
         # Keyword filter
         if keyword and keyword.strip():
-            keyword_lower = keyword.lower()
-            filtered = [q for q in filtered 
-                       if keyword_lower in q['question'].lower() or keyword_lower in q['answer'].lower()]
-            logger.info(f"After keyword filter '{keyword}': {len(filtered)} questions")
+            keyword_clean = keyword.strip()
+            
+            # Check if wrapped in quotes for exact word matching
+            if (keyword_clean.startswith('"') and keyword_clean.endswith('"')) or \
+               (keyword_clean.startswith("'") and keyword_clean.endswith("'")):
+                # Exact word matching (word boundaries)
+                keyword_lower = keyword_clean[1:-1].lower()  # Remove quotes
+                pattern = r'\b' + re.escape(keyword_lower) + r'\b'
+                filtered = [q for q in filtered 
+                           if re.search(pattern, q['question'].lower()) or re.search(pattern, q['answer'].lower())]
+                logger.info(f"After exact keyword filter '{keyword_lower}': {len(filtered)} questions")
+            else:
+                # Substring matching (any occurrence)
+                keyword_lower = keyword_clean.lower()
+                filtered = [q for q in filtered 
+                           if keyword_lower in q['question'].lower() or keyword_lower in q['answer'].lower()]
+                logger.info(f"After substring keyword filter '{keyword_lower}': {len(filtered)} questions")
         
         return filtered
     

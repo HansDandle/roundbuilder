@@ -156,8 +156,8 @@ with col2:
 with col3:
     keyword = st.text_input(
         "Keyword (optional)",
-        placeholder="Search in question or answer",
-        help="Leave blank to skip keyword filtering"
+        placeholder='Search: "prince" for exact word, prince for substring (princeton, princess, prince)',
+        help='Use quotes "word" for exact word matching (word boundaries only). Without quotes, matches substrings.'
     )
     keyword = keyword.strip() if keyword else None
 
