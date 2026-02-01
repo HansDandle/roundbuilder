@@ -100,7 +100,10 @@ class SimpleRoundBuilder:
         # Answer pattern filter
         if answer_starts_with and answer_starts_with.strip():
             letter = answer_starts_with.strip().upper()[0]  # Get first letter
-            filtered = [q for q in filtered if q['answer'].strip() and q['answer'].strip()[0].upper() == letter]
+            def check_answer_starts(question):
+                answer_text = question.get('answer', '').strip()
+                return answer_text and answer_text[0].upper() == letter
+            filtered = [q for q in filtered if check_answer_starts(q)]
             logger.info(f"After answer starts with '{letter}' filter: {len(filtered)} questions")
         
         return filtered
