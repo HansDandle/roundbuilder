@@ -62,7 +62,8 @@ class SimpleRoundBuilder:
                         questions: List[Dict[str, str]],
                         category: str = None,
                         difficulty: str = None,
-                        keyword: str = None) -> List[Dict[str, str]]:
+                        keyword: str = None,
+                        answer_starts_with: str = None) -> List[Dict[str, str]]:
         """Filter questions by category, difficulty, and/or keyword"""
         filtered = questions
         
@@ -96,6 +97,12 @@ class SimpleRoundBuilder:
                            if keyword_lower in q['question'].lower() or keyword_lower in q['answer'].lower()]
                 logger.info(f"After substring keyword filter '{keyword_lower}': {len(filtered)} questions")
         
+        # Answer pattern filter
+        if answer_starts_with and answer_starts_with.strip():
+            letter = answer_starts_with.strip().upper()[0]  # Get first letter
+            filtered = [q for q in filtered if q['answer'].strip() and q['answer'].strip()[0].upper() == letter]
+            logger.info(f"After answer starts with '{letter}' filter: {len(filtered)} questions")
+        
         return filtered
     
     def build_round(self,
@@ -104,13 +111,14 @@ class SimpleRoundBuilder:
                    round_size: int = 10,
                    category: str = None,
                    difficulty: str = None,
-                   keyword: str = None) -> Dict[str, Any]:
+                   keyword: str = None,
+                   answer_starts_with: str = None) -> Dict[str, Any]:
         """Build a round by randomly selecting from filtered questions"""
         
         logger.info(f"Building round: {round_name}, size: {round_size}")
         
         # Filter questions
-        filtered = self.filter_questions(questions, category, difficulty, keyword)
+        filtered = self.filter_questions(questions, category, difficulty, keyword, answer_starts_with)
         
         if not filtered:
             logger.warning("No questions matched filters")

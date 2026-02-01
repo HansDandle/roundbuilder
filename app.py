@@ -161,6 +161,21 @@ with col3:
     )
     keyword = keyword.strip() if keyword else None
 
+# Answer pattern filter
+st.markdown("### Answer Filter (Optional)")
+col1, col2 = st.columns(2)
+
+with col1:
+    answer_starts = st.text_input(
+        "Answers start with letter",
+        placeholder="e.g., W (or leave blank)",
+        help="All answers in round must start with this letter (e.g., 'W' for 'Washington', 'William', etc.)"
+    )
+    answer_starts = answer_starts.strip() if answer_starts and answer_starts.strip() else None
+
+with col2:
+    st.info("💡 Create themed rounds! E.g., 'W' for a round where every answer starts with W")
+
 # Round settings
 col1, col2 = st.columns(2)
 
@@ -193,7 +208,8 @@ if st.button("🎲 Generate Random Round", use_container_width=True, type="prima
             round_size=round_size,
             category=category,
             difficulty=difficulty,
-            keyword=keyword
+            keyword=keyword,
+            answer_starts_with=answer_starts
         )
     
     if st.session_state.round['question_count'] == 0:
